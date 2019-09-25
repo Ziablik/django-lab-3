@@ -1,28 +1,7 @@
 <template>
   <div class="Book">
     <Menu></Menu>
-    <button @click="add">Добавить книгу</button>
-    <div style="display: flex; align-items:center; flex-wrap:wrap;">
-      <div v-for="book in books" class="book_card">
-        <label class="name">{{book.name}}</label></br>
-        <div style="display: flex;
-							align-items: center;
-							justify-content: space-evenly;">
-          <div style="display: flex;
-								flex-direction: column;">
-            <label>Шифр: {{book.cipher}}</label>
-            <label>Количество копий: {{book.copy_count}}</label>
-          </div>
-          <div style="display: flex;
-								flex-direction: column;">
-            <label>Автор: {{book.author}}</label>
-            <label>Год издания: {{book.publication_year}}</label>
-            <label>Издательство: {{book.publishing}}</label>
-          </div>
-        </div>
-        <router-link :to="{ name: 'copy', params: { id: book.id, book:book }}">Перейти</router-link>
-      </div>
-    </div>
+    <button @click="add" class="btn btn-dark" type="button">Добавить книгу</button>
     <div class="container-fluid">
       <div class="row">
         <div v-for="book in books" class="col-md-4">
@@ -31,26 +10,31 @@
               Название книги: {{ book.name }}
             </h5>
             <div class="card-body">
-              <div class="row">
-                <div class="col-md-6">
-                  <p class="card-text">
-                    Автор: {{ book.author }}
-                  </p>
-                  <p>
-                    Раздел: {{ book.section }}
-                  </p>
-                </div>
-                <div class="col-md-6">
-                  <p>Год издания: {{book.publication_year}}</p>
-                  <p>Издательство: {{book.publishing}}</p>
-                </div>
-              </div>
-
+              <p class="card-text">
+                Автор: {{ book.author }}
+              </p>
+              <p class="card-text">
+                Описание раздела: {{ book.section }}
+              </p>
+              <p class="card-text">
+                Издательство: {{ book.publishing }}
+              </p>
             </div>
             <div class="card-footer">
-              Шифр: {{book.cipher}}
+              Шифр: {{book.code}}
             </div>
           </div>
+          <div class="btn-group" role="group">
+              <button v-if="book.active" class="btn btn-dark" type="button">
+                Выдача книги
+              </button>
+              <button v-else class="btn btn-dark" type="button">
+                Возврат книги
+              </button>
+              <button class="btn btn-dark" type="button">
+                Списать книгу
+              </button>
+            </div>
         </div>
       </div>
     </div>
@@ -93,19 +77,3 @@
     }
   };
 </script>
-
-
-<style type="text/css">
-  .book_card {
-    margin: 10px;
-    border: 3px solid #1b639b;
-    padding: 10px;
-    min-width: 400px;
-    max-width: 600px;
-  }
-
-  .book_card .name {
-    font-size: 18pt;
-    margin: 8px;
-  }
-</style>

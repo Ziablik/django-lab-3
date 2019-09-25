@@ -11,6 +11,7 @@ import CopyAdd from '@/components/Book/CopyAdd'
 import Rent from '@/components/Rent/Rent'
 import Return from '@/components/Rent/Return'
 import Reader from '@/components/Reader/Reader'
+import ReaderAdd from "../components/Reader/ReaderAdd";
 
 Vue.use(Router)
 
@@ -62,6 +63,11 @@ export default new Router({
       path: '/reader',
       name: 'reader',
       component: Reader
+    },
+    {
+      path: '/reader/add',
+      name: 'reader_add',
+      component: ReaderAdd
     },
   ]
 })

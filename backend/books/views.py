@@ -1,4 +1,4 @@
-from django.http import Http404
+from django.http import Http404, JsonResponse
 from django.shortcuts import render
 from rest_framework import viewsets, permissions
 from rest_framework.views import APIView
@@ -6,9 +6,11 @@ from rest_framework.response import Response
 from django.contrib.auth.models import User
 import transliterate
 import datetime
+import json
 
 from .models import Book, ReadingRoom, Educations, Reader, BookReader
-from .serializers import BookSerializer, BookReaderSerializer, ReaderSerializer, ReadingRoomSerializer, EducationsSerializer
+from .serializers import BookSerializer, BookReaderSerializer, ReaderSerializer, ReadingRoomSerializer, \
+    EducationsSerializer
 
 
 class BookList(APIView):
@@ -38,6 +40,70 @@ class BookDetail(APIView):
         serializer = BookSerializer(book)
         return Response(serializer.data)
 
+
+class WorkTable(APIView):
+    def get(self, request):
+        today = datetime.date.today()
+        bookreaders = BookReader.objects.filter(finish_date=None)
+        bookreaders_month = []
+        bookreaders_enought = []
+
+        for bookreader in bookreaders:
+            if (today - bookreader.start_date).days >= 30:
+                bookreaders_month.append(bookreader)
+
+        for bookreader in bookreaders:
+            if Book.objects.filter(name=bookreader.book.name).count() < 3:
+                bookreaders_enought.append(bookreader)
+
+        readers = Reader.objects.filter(birthday__gte='2001-06-13')
+
+        data = [0, 0, 0, 0]
+        for reader in Reader.objects.all():
+            if reader.science_degree:
+                data[3] = data[3] + 1
+            elif reader.education.name == 'Среднее специальное':
+                data[0] = data[0] + 1
+            elif reader.education.name == 'Срднее':
+                data[1] = data[1] + 1
+            elif reader.education.name == 'Высшее образование':
+                data[2] = data[2] + 1
+        return JsonResponse()
+
+
+def work_table(request):
+    today = datetime.date.today()
+    bookreaders = BookReader.objects.filter(finish_date=None)
+    bookreaders_month = []
+    bookreaders_enought = []
+
+    for bookreader in bookreaders:
+        if (today - bookreader.start_date).days >= 30:
+            bookreaders_month.append(bookreader)
+
+    for bookreader in bookreaders:
+        if Book.objects.filter(name=bookreader.book.name).count() < 3:
+            bookreaders_enought.append(bookreader)
+
+    readers = Reader.objects.filter(birthday__gte='2001-06-13')
+
+    data = [0, 0, 0, 0]
+    for reader in Reader.objects.all():
+        if reader.science_degree:
+            data[3] = data[3] + 1
+        elif reader.education.name == 'Среднее специальное':
+            data[0] = data[0] + 1
+        elif reader.education.name == 'Срднее':
+            data[1] = data[1] + 1
+        elif reader.education.name == 'Высшее образование':
+            data[2] = data[2] + 1
+
+    return {
+        'bookreaders_month': bookreaders_month,
+        'bookreaders_enought': bookreaders_enought,
+        'readers': readers,
+        'data': data
+    }
 
 # class BookCopyList(APIView):
 #     def get(self, request, pk):
@@ -128,4 +194,3 @@ class BookDetail(APIView):
 #             rent.save()
 #         serializer = RentSerializer(rent)
 #         return Response(serializer.data)
-

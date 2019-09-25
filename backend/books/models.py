@@ -23,7 +23,7 @@ class Book(models.Model):
         null=True
     )
     name = models.CharField('Название книги', max_length=50)
-    authors = models.CharField('Авторы', max_length=255)
+    author = models.CharField('Автор', max_length=255)
     publishing = models.CharField('Издательство', max_length=100)
     section = models.TextField('Раздел')
     code = models.CharField('Шифр книги', max_length=100)

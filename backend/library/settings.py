@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'corsheaders',
 
-    'staff',
     'books',
 
 ]
@@ -91,7 +90,7 @@ WSGI_APPLICATION = 'library.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'library_3',
+        'NAME': 'library',
         'USER': 'admin',
         'PASSWORD': 'admin',
         'HOST': 'localhost',

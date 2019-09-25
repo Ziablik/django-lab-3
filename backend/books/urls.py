@@ -1,11 +1,13 @@
 from django.urls import path
 from .views import *
+from . import views
 
 app_name = 'staff'
 
 urlpatterns = [
     path('book/', BookList.as_view()),
     path('book/<int:pk>/', BookDetail.as_view()),
+    path('work-table/', WorkTable.as_view()),
     # path('book/<int:pk>/copy/', BookCopyList.as_view()),
     #
     # path('copy/', CopyList.as_view()),
