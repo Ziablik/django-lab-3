@@ -1,16 +1,12 @@
-from django.http import Http404, JsonResponse
-from django.shortcuts import render
-from rest_framework import viewsets, permissions
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from django.contrib.auth.models import User
-import transliterate
 import datetime
-import json
 
-from .models import Book, ReadingRoom, Educations, Reader, BookReader
-from .serializers import BookSerializer, BookReaderSerializer, ReaderSerializer, ReadingRoomSerializer, \
-    EducationsSerializer
+from django.http import Http404, JsonResponse
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework import serializers
+
+from .models import Book, Reader, BookReader
+from .serializers import BookSerializer
 
 
 class BookList(APIView):
@@ -50,13 +46,20 @@ class WorkTable(APIView):
 
         for bookreader in bookreaders:
             if (today - bookreader.start_date).days >= 30:
-                bookreaders_month.append(bookreader)
+                bookreaders_month.append({
+                    "book": bookreader.book,
+                    "reader": bookreader.reader,
+                    "start_date": bookreader.start_date,
+                    "finish_date": bookreader.finish_date,
+
+                })
 
         for bookreader in bookreaders:
             if Book.objects.filter(name=bookreader.book.name).count() < 3:
                 bookreaders_enought.append(bookreader)
 
         readers = Reader.objects.filter(birthday__gte='2001-06-13')
+        readers_json = []
 
         data = [0, 0, 0, 0]
         for reader in Reader.objects.all():
@@ -68,7 +71,21 @@ class WorkTable(APIView):
                 data[1] = data[1] + 1
             elif reader.education.name == 'Высшее образование':
                 data[2] = data[2] + 1
-        return JsonResponse()
+            readers_json.append({
+                "library_ticket": reader.library_ticket,
+                "surname": reader.surname,
+                "first_name": reader.first_name,
+                "second_name": reader.second_name,
+                "passport_number": reader.passport_number,
+                "birthday": reader.birthday,
+                "addr": reader.addr,
+                "phone": reader.phone,
+                "science_degree": reader.science_degree,
+                "active": reader.active,
+                "deleted_at": reader.deleted_at,
+                "registration_date": reader.registration_date
+            })
+        return JsonResponse(readers_json, safe=False)
 
 
 def work_table(request):
