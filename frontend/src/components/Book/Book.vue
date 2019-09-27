@@ -25,7 +25,7 @@
             </div>
           </div>
           <div class="btn-group" role="group">
-              <button v-if="book.active" class="btn btn-dark" type="button">
+              <button v-if="book.active" @click="addBookReader(book.id)" class="btn btn-dark" type="button">
                 Выдача книги
               </button>
               <button v-else class="btn btn-dark" type="button">
@@ -73,6 +73,9 @@
       },
       add() {
         this.$router.push({name: "book_add"})
+      },
+      addBookReader(pk){
+        this.$router.push({name: "book-reader", props:pk})
       }
     }
   };

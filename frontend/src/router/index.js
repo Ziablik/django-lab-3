@@ -9,6 +9,8 @@ import BookAdd from '@/components/Book/BookAdd'
 import Reader from '@/components/Reader/Reader'
 import ReaderAdd from "../components/Reader/ReaderAdd";
 
+import BookReaderAdd from "../components/BookReader/BookReaderAdd";
+
 Vue.use(Router)
 
 export default new Router({
@@ -42,6 +44,12 @@ export default new Router({
       path: '/reader/add',
       name: 'reader_add',
       component: ReaderAdd
+    },
+    {
+      path: 'book/reader/add',
+      name: 'book-reader',
+      component: BookReaderAdd,
+      props: true
     },
   ]
 })

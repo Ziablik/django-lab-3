@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from rest_framework import serializers
 
 from .models import Book, Reader, BookReader, ReadingRoom, Educations
-from .serializers import BookSerializer, ReaderSerializer, ReadingRoomSerializer, EducationsSerializer
+from .serializers import BookSerializer, ReaderSerializer, ReadingRoomSerializer, EducationsSerializer, BookReaderSerializer
 
 
 class BookList(APIView):
@@ -130,6 +130,7 @@ class ReaderList(APIView):
     def post(self, request):
         reader = ReaderSerializer(data=request.data)
         if reader.is_valid():
+            reader.registration_date = datetime.date.today()
             reader.save()
             return Response({'msg': "Success"})
         else:
@@ -161,6 +162,18 @@ class EducationList(APIView):
         education = Educations.objects.all()
         serializer = EducationsSerializer(education, many=True)
         return Response(serializer.data)
+
+
+class BookReaderAdd(APIView):
+    def post(self, request, pk):
+        bookreader = BookReaderSerializer(data=request.data)
+        if bookreader.is_valid():
+            bookreader.start_date = datetime.date.today()
+            bookreader.save()
+            return Response({'msg': "Success"})
+        else:
+            return Response({'msg': "Error"})
+
 
 
 # class BookCopyList(APIView):
