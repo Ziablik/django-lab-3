@@ -72,7 +72,7 @@ class Reader(models.Model):
         on_delete=models.SET_NULL,
         null=True
     )
-    science_degree = models.BooleanField('Ученая степень')
+    science_degree = models.BooleanField('Ученая степень', default=False)
     active = models.BooleanField('Записан читатель или нет', default=True)
     deleted_at = models.DateField('Дата удаления', null=True)
     registration_date = models.DateField('Дата регистрации', null=True)

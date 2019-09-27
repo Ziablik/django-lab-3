@@ -5,8 +5,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import serializers
 
-from .models import Book, Reader, BookReader
-from .serializers import BookSerializer
+from .models import Book, Reader, BookReader, ReadingRoom, Educations
+from .serializers import BookSerializer, ReaderSerializer, ReadingRoomSerializer, EducationsSerializer
 
 
 class BookList(APIView):
@@ -39,6 +39,7 @@ class BookDetail(APIView):
 
 class WorkTable(APIView):
     def get(self, request):
+        data = []
         today = datetime.date.today()
         bookreaders = BookReader.objects.filter(finish_date=None)
         bookreaders_month = []
@@ -51,76 +52,116 @@ class WorkTable(APIView):
                     "reader": bookreader.reader,
                     "start_date": bookreader.start_date,
                     "finish_date": bookreader.finish_date,
-
                 })
 
         for bookreader in bookreaders:
             if Book.objects.filter(name=bookreader.book.name).count() < 3:
-                bookreaders_enought.append(bookreader)
+                bookreaders_enought.append({
+                    "book": {
+                        'name': bookreader.book.name,
+                    },
+                    "reader": {
+                        'fio': bookreader.reader.surname + " " + bookreader.reader.second_name + " " + bookreader.reader.first_name,
+                        'library_ticket': bookreader.reader.library_ticket,
+                    },
+                    "start_date": bookreader.start_date,
+                    "finish_date": bookreader.finish_date,
+                })
 
         readers = Reader.objects.filter(birthday__gte='2001-06-13')
         readers_json = []
 
-        data = [0, 0, 0, 0]
+        data_dgrm = [0, 0, 0, 0]
+        count = 0
         for reader in Reader.objects.all():
             if reader.science_degree:
-                data[3] = data[3] + 1
+                data_dgrm[3] += 1
             elif reader.education.name == 'Среднее специальное':
-                data[0] = data[0] + 1
+                data_dgrm[0] += 1
             elif reader.education.name == 'Срднее':
-                data[1] = data[1] + 1
+                data_dgrm[1] += 1
             elif reader.education.name == 'Высшее образование':
-                data[2] = data[2] + 1
+                data_dgrm[2] += 1
             readers_json.append({
+                'fio': reader.surname + " " + reader.second_name + " " + reader.first_name,
                 "library_ticket": reader.library_ticket,
-                "surname": reader.surname,
-                "first_name": reader.first_name,
-                "second_name": reader.second_name,
-                "passport_number": reader.passport_number,
                 "birthday": reader.birthday,
-                "addr": reader.addr,
-                "phone": reader.phone,
-                "science_degree": reader.science_degree,
-                "active": reader.active,
-                "deleted_at": reader.deleted_at,
                 "registration_date": reader.registration_date
             })
-        return JsonResponse(readers_json, safe=False)
+            count += 1
+
+        data_dgrm[0] = {
+            'label': 'Среднее специальное',
+            'value': data_dgrm[0] / count * 100,
+            'color': 'red',
+        }
+        data_dgrm[1] = {
+            'label': 'Срднее',
+            'value': data_dgrm[1] / count * 100,
+            'color': 'green',
+        }
+        data_dgrm[2] = {
+            'label': 'Высшее образование',
+            'value': data_dgrm[2] / count * 100,
+            'color': 'blue',
+        }
+        data_dgrm[3] = {
+            'label': 'Научная степень',
+            'value': data_dgrm[3] / count * 100,
+            'color': 'purple',
+        }
+
+        data.append({
+            'bookreaders_month': bookreaders_month,
+            'bookreaders_enought': bookreaders_enought,
+            'readers_json': readers_json,
+            'data_dgrm': data_dgrm,
+        })
+
+        return JsonResponse(data, safe=False)
 
 
-def work_table(request):
-    today = datetime.date.today()
-    bookreaders = BookReader.objects.filter(finish_date=None)
-    bookreaders_month = []
-    bookreaders_enought = []
+class ReaderList(APIView):
+    def get(self, request):
+        reader = Reader.objects.all()
+        serializer = ReaderSerializer(reader, many=True)
+        return Response(serializer.data)
 
-    for bookreader in bookreaders:
-        if (today - bookreader.start_date).days >= 30:
-            bookreaders_month.append(bookreader)
+    def post(self, request):
+        reader = ReaderSerializer(data=request.data)
+        if reader.is_valid():
+            reader.save()
+            return Response({'msg': "Success"})
+        else:
+            return Response({'msg': "Error"})
 
-    for bookreader in bookreaders:
-        if Book.objects.filter(name=bookreader.book.name).count() < 3:
-            bookreaders_enought.append(bookreader)
 
-    readers = Reader.objects.filter(birthday__gte='2001-06-13')
+class ReaderDetail(APIView):
+    def get_object(self, pk):
+        try:
+            return Reader.objects.get(id=pk)
+        except Reader.DoesNotExist:
+            raise Http404
 
-    data = [0, 0, 0, 0]
-    for reader in Reader.objects.all():
-        if reader.science_degree:
-            data[3] = data[3] + 1
-        elif reader.education.name == 'Среднее специальное':
-            data[0] = data[0] + 1
-        elif reader.education.name == 'Срднее':
-            data[1] = data[1] + 1
-        elif reader.education.name == 'Высшее образование':
-            data[2] = data[2] + 1
+    def get(self, request, pk):
+        reader = self.get_object(pk)
+        serializer = ReaderSerializer(reader)
+        return Response(serializer.data)
 
-    return {
-        'bookreaders_month': bookreaders_month,
-        'bookreaders_enought': bookreaders_enought,
-        'readers': readers,
-        'data': data
-    }
+
+class ReadingRoomList(APIView):
+    def get(self, request):
+        reading_room = ReadingRoom.objects.all()
+        serializer = ReadingRoomSerializer(reading_room, many=True)
+        return Response(serializer.data)
+
+
+class EducationList(APIView):
+    def get(self, request):
+        education = Educations.objects.all()
+        serializer = EducationsSerializer(education, many=True)
+        return Response(serializer.data)
+
 
 # class BookCopyList(APIView):
 #     def get(self, request, pk):

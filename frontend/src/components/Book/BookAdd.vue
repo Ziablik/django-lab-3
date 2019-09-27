@@ -1,13 +1,23 @@
 <template>
   <div class="Book">
     <Menu></Menu>
-    <div class="form">
-      <label>Шифр: <input type="text" name="code" v-model="code"></label>
-      <label>Название книги: <input type="text" name="name" v-model="name"></label>
-      <label>Автор книги: <input type="text" name="author" v-model="author"></label>
-      <label>Издательство: <input type="text" name="publishing" v-model="publishing"></label>
-      <label>Раздел: <input type="text" name="section" v-model="section"></label>
-      <button @click="createBook">Добавить книгу</button>
+    <div class="container-fluid pt-2">
+      <div class="form">
+        <label>Шифр: <input type="text" name="code" v-model="code"></label>
+        <label>Название книги: <input type="text" name="name" v-model="name"></label>
+        <label>Автор книги: <input type="text" name="author" v-model="author"></label>
+        <label>Издательство: <input type="text" name="publishing" v-model="publishing"></label>
+        <label>Раздел: <input type="text" name="section" v-model="section"></label>
+        <label>Зал:
+          <select v-model="room">
+            <option v-for="room in roomList" v-bind:value="room.id">
+              {{room.room_name}}
+            </option>
+          </select>
+        </label>
+
+        <button @click="createBook">Добавить книгу</button>
+      </div>
     </div>
 
     <p>{{msg}}</p>
@@ -25,13 +35,28 @@
     },
     data() {
       return {
+        roomList: '',
         code: '',
         name: '',
         author: '',
         publishing: '',
         section: '',
+        room: '',
         msg: '',
       }
+    },
+    created() {
+      $.ajax({
+        url: "http://localhost:8000/api/reading-rooms/",
+        type: "GET",
+        success: (resp) => {
+          this.roomList = resp
+          // console.log(resp)
+        },
+        error: (resp) => {
+          // console.log(resp)
+        },
+      })
     },
     methods: {
       checkForm: function (e) {
