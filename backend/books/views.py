@@ -67,9 +67,17 @@ class WorkTable(APIView):
                     "start_date": bookreader.start_date,
                     "finish_date": bookreader.finish_date,
                 })
-
-        readers = Reader.objects.filter(birthday__gte='2001-06-13')
+        start_date = datetime.date(1999, 1, 1)
+        readers = Reader.objects.filter(birthday__gte='1999-01-01')
         readers_json = []
+
+        for reader in readers:
+            readers_json.append({
+                'fio': reader.surname + " " + reader.second_name + " " + reader.first_name,
+                "library_ticket": reader.library_ticket,
+                "birthday": reader.birthday,
+                "registration_date": reader.registration_date
+            })
 
         data_dgrm = [0, 0, 0, 0]
         count = 0
@@ -78,16 +86,10 @@ class WorkTable(APIView):
                 data_dgrm[3] += 1
             elif reader.education.name == 'Среднее специальное':
                 data_dgrm[0] += 1
-            elif reader.education.name == 'Срднее':
+            elif reader.education.name == 'Среднее образование':
                 data_dgrm[1] += 1
             elif reader.education.name == 'Высшее образование':
                 data_dgrm[2] += 1
-            readers_json.append({
-                'fio': reader.surname + " " + reader.second_name + " " + reader.first_name,
-                "library_ticket": reader.library_ticket,
-                "birthday": reader.birthday,
-                "registration_date": reader.registration_date
-            })
             count += 1
 
         data_dgrm[0] = {
@@ -96,7 +98,7 @@ class WorkTable(APIView):
             'color': 'red',
         }
         data_dgrm[1] = {
-            'label': 'Срднее',
+            'label': 'Срднее образование',
             'value': data_dgrm[1] / count * 100,
             'color': 'green',
         }

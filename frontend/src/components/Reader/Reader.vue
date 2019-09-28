@@ -1,7 +1,7 @@
 <template>
   <div class="Book">
     <Menu></Menu>
-    <button @click="add" class="btn btn-dark" type="button">Добавить книгу</button>
+    <button @click="add" class="btn btn-dark" type="button">Добавить читателя</button>
     <div class="container-fluid">
       <div class="row">
         <div class="col-md-12">

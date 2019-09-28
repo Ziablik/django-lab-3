@@ -1,7 +1,6 @@
 <template>
   <div class="BookReader">
     <Menu></Menu>
-    {{props}}
     <div class="container-fluid pt-2">
       <div class="form">
         <label>Читатель:
@@ -57,7 +56,8 @@
       createBookReader() {
         if (this.checkForm()) {
           let data = {
-
+            book: '',
+            reader: '',
           }
 
           $.ajax({

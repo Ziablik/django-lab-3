@@ -5,7 +5,7 @@
     <div class="container-fluid">
       <div class="row">
         <div v-for="book in books" class="col-md-4">
-          <div class="card text-white bg-success">
+          <div v-if="book.active" class="card text-white bg-success">
             <h5 class="card-header">
               Название книги: {{ book.name }}
             </h5>
@@ -23,18 +23,42 @@
             <div class="card-footer">
               Шифр: {{book.code}}
             </div>
-          </div>
-          <div class="btn-group" role="group">
-              <button v-if="book.active" @click="addBookReader(book.id)" class="btn btn-dark" type="button">
+            <div class="btn-group" role="group">
+              <button @click="addBookReader(book.id)" class="btn btn-dark" type="button">
                 Выдача книги
               </button>
-              <button v-else class="btn btn-dark" type="button">
+              <button class="btn btn-dark" type="button">
+                Списать книгу
+              </button>
+            </div>
+          </div>
+          <div v-else class="card text-white bg-danger">
+            <h5 class="card-header">
+              Название книги: {{ book.name }}
+            </h5>
+            <div class="card-body">
+              <p class="card-text">
+                Автор: {{ book.author }}
+              </p>
+              <p class="card-text">
+                Описание раздела: {{ book.section }}
+              </p>
+              <p class="card-text">
+                Издательство: {{ book.publishing }}
+              </p>
+            </div>
+            <div class="card-footer">
+              Шифр: {{book.code}}
+            </div>
+            <div class="btn-group text-center" role="group">
+              <button class="btn btn-dark" type="button">
                 Возврат книги
               </button>
               <button class="btn btn-dark" type="button">
                 Списать книгу
               </button>
             </div>
+          </div>
         </div>
       </div>
     </div>
@@ -52,7 +76,7 @@
     },
     data() {
       return {
-        books: ''
+        books: '',
       }
     },
     created() {
@@ -74,8 +98,9 @@
       add() {
         this.$router.push({name: "book_add"})
       },
-      addBookReader(pk){
-        this.$router.push({name: "book-reader", props:pk})
+      addBookReader(pk) {
+        console.log(pk)
+        this.$router.push({name: "book-reader"})
       }
     }
   };

@@ -48,8 +48,7 @@ export default new Router({
     {
       path: 'book/reader/add',
       name: 'book-reader',
-      component: BookReaderAdd,
-      props: true
+      component: BookReaderAdd
     },
   ]
 })

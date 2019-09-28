@@ -111,7 +111,7 @@
         <div class="col-md-6">
           <div class="jumbotron card card-block">
             <h2>
-                          Список читателей младших 20 лет
+              Список читателей младше 20 лет
             </h2>
             <div class="container-fluid">
               <div class="row">
@@ -139,7 +139,7 @@
                     <tbody>
                     <tr v-for="(reader, index) in readers_json">
                       <td>
-                        {{index +  1}}
+                        {{index + 1}}
                       </td>
                       <td>
                         {{ reader.fio }}
