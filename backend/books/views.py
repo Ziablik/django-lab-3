@@ -54,8 +54,13 @@ class WorkTable(APIView):
         for bookreader in bookreaders:
             if (today - bookreader.start_date).days >= 30:
                 bookreaders_month.append({
-                    "book": bookreader.book,
-                    "reader": bookreader.reader,
+                    "book": {
+                        'name': bookreader.book.name,
+                    },
+                    "reader": {
+                        'fio': bookreader.reader.surname + " " + bookreader.reader.second_name + " " + bookreader.reader.first_name,
+                        'library_ticket': bookreader.reader.library_ticket,
+                    },
                     "start_date": bookreader.start_date,
                     "finish_date": bookreader.finish_date,
                 })

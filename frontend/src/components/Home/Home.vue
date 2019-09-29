@@ -37,7 +37,7 @@
                         {{index + 1}}
                       </td>
                       <td>
-                        {{ bookreader.reader.surname }}
+                        {{ bookreader.reader.fio }}
                       </td>
                       <td>
                         {{ bookreader.reader.library_ticket }}
@@ -88,7 +88,7 @@
                         {{index + 1}}
                       </td>
                       <td>
-                        {{ bookreader.reader }}
+                        {{ bookreader.reader.fio }}
                       </td>
                       <td>
                         {{ bookreader.reader.library_ticket }}
