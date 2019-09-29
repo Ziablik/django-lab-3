@@ -46,9 +46,11 @@ export default new Router({
       component: ReaderAdd
     },
     {
-      path: 'book/reader/add',
+      path: 'book/reader/add/:id',
       name: 'book-reader',
-      component: BookReaderAdd
+      component: BookReaderAdd,
+      props: true,
+
     },
   ]
 })

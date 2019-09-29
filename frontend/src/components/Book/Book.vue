@@ -24,8 +24,9 @@
               Шифр: {{book.code}}
             </div>
             <div class="btn-group" role="group">
-              <button @click="addBookReader(book.id)" class="btn btn-dark" type="button">
-                Выдача книги
+              <button class="btn btn-dark" type="button">
+<!--                Выдача книги-->
+                <router-link :to="{ name: 'book-reader', params: { id: book.id, book:book }}">Перейти</router-link>
               </button>
               <button class="btn btn-dark" type="button">
                 Списать книгу
@@ -99,8 +100,7 @@
         this.$router.push({name: "book_add"})
       },
       addBookReader(pk) {
-        console.log(pk)
-        this.$router.push({name: "book-reader"})
+        this.$router.push({name: "book-reader", params: {id:pk}})
       }
     }
   };

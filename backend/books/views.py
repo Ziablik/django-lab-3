@@ -67,7 +67,6 @@ class WorkTable(APIView):
                     "start_date": bookreader.start_date,
                     "finish_date": bookreader.finish_date,
                 })
-        start_date = datetime.date(1999, 1, 1)
         readers = Reader.objects.filter(birthday__gte='1999-01-01')
         readers_json = []
 
@@ -167,14 +166,22 @@ class EducationList(APIView):
 
 
 class BookReaderAdd(APIView):
-    def post(self, request, pk):
+    def post(self, request):
         bookreader = BookReaderSerializer(data=request.data)
         if bookreader.is_valid():
-            bookreader.start_date = datetime.date.today()
+            book = Book.objects.get(id=request.data['book'])
+            book.active = False
+            book.save()
             bookreader.save()
             return Response({'msg': "Success"})
         else:
+            print('error')
             return Response({'msg': "Error"})
+
+
+class BookReturn(APIView):
+    def post(self, request):
+        return Response({'msg': 'Success'})
 
 
 

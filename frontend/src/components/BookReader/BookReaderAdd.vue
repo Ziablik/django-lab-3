@@ -22,25 +22,33 @@
   import Menu from "@/components/Menu/Menu"
 
   export default {
-    props: {},
+    props: ['id'],
     data() {
       return {
         readerList: '',
         reader: '',
-        book: ''
+        'start_date': '',
       }
     },
     created() {
-      console.log(props);
+      var date = new Date()
+
+      var dd = date.getDate();
+      if (dd < 10) dd = '0' + dd;
+
+      var mm = date.getMonth() + 1;
+      if (mm < 10) mm = '0' + mm;
+
+      var yy = date.getFullYear() % 100;
+      if (yy < 10) yy = '0' + yy;
+      this.start_date = '20'+yy + '-' + mm + '-' + dd;
       $.ajax({
         url: "http://localhost:8000/api/readers/",
         type: "GET",
         success: (resp) => {
           this.readerList = resp
-          // console.log(resp)
         },
         error: (resp) => {
-          // console.log(resp)
         },
       })
     },
@@ -56,16 +64,17 @@
       createBookReader() {
         if (this.checkForm()) {
           let data = {
-            book: '',
-            reader: '',
+            reader: this.reader,
+            book: this.id,
+            start_date: this.start_date,
           }
 
           $.ajax({
-            url: "http://localhost:8000/api/readers/",
+            url: "http://localhost:8000/api/book-reader/",
             type: "POST",
             data: data,
             success: (resp) => {
-              this.msg = "Книга выдана"
+              this.$router.push({name: "book"})
             },
             error: (resp) => {
               console.log('errorrr')
