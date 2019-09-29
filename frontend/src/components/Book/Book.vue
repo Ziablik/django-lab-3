@@ -25,10 +25,10 @@
             </div>
             <div class="btn-group" role="group">
               <button class="btn btn-dark" type="button">
-<!--                Выдача книги-->
-                <router-link :to="{ name: 'book-reader', params: { id: book.id, book:book }}">Перейти</router-link>
+                <!--                Выдача книги-->
+                <router-link :to="{ name: 'book-reader', params: { id: book.id, book:book }}">Выдача книги</router-link>
               </button>
-              <button class="btn btn-dark" type="button">
+              <button @click="bookDelete(book.id)" class="btn btn-dark" type="button">
                 Списать книгу
               </button>
             </div>
@@ -52,10 +52,10 @@
               Шифр: {{book.code}}
             </div>
             <div class="btn-group text-center" role="group">
-              <button class="btn btn-dark" type="button">
+              <button @click="bookReturn(book.id)" class="btn btn-dark" type="button">
                 Возврат книги
               </button>
-              <button class="btn btn-dark" type="button">
+              <button @click="bookDelete(book.id)" class="btn btn-dark" type="button">
                 Списать книгу
               </button>
             </div>
@@ -99,8 +99,35 @@
       add() {
         this.$router.push({name: "book_add"})
       },
-      addBookReader(pk) {
-        this.$router.push({name: "book-reader", params: {id:pk}})
+      bookReturn(pk) {
+        $.ajax({
+          url: "http://localhost:8000/api/book-return/",
+          type: "POST",
+          data: {
+            id: pk,
+          },
+          success: (resp) => {
+            this.getList()
+          },
+          error: (resp) => {
+            console.log([resp, "Error"])
+          },
+        })
+      },
+      bookDelete(pk) {
+        $.ajax({
+          url: 'http://localhost:8000/api/book/',
+          type: 'DELETE',
+          data: {
+            id: pk,
+          },
+          success: (resp) => {
+            this.getList()
+          },
+          error: (resp) => {
+            console.log([resp, "Error"])
+          },
+        })
       }
     }
   };

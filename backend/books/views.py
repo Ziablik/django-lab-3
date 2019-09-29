@@ -3,10 +3,11 @@ import datetime
 from django.http import Http404, JsonResponse
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import serializers
+from django.shortcuts import get_object_or_404
 
 from .models import Book, Reader, BookReader, ReadingRoom, Educations
-from .serializers import BookSerializer, ReaderSerializer, ReadingRoomSerializer, EducationsSerializer, BookReaderSerializer
+from .serializers import BookSerializer, ReaderSerializer, ReadingRoomSerializer, EducationsSerializer, \
+    BookReaderSerializer
 
 
 class BookList(APIView):
@@ -22,6 +23,11 @@ class BookList(APIView):
             return Response({'msg': "Success"})
         else:
             return Response({'msg': "Error"})
+
+    def delete(self, request):
+        book = get_object_or_404(Book, id=request.data['id'])
+        book.delete()
+        return Response({'msg': "Success"})
 
 
 class BookDetail(APIView):
@@ -181,96 +187,10 @@ class BookReaderAdd(APIView):
 
 class BookReturn(APIView):
     def post(self, request):
+        book = get_object_or_404(Book, id=request.data['id'])
+        book.active = True
+        book.save()
+        book_reader = get_object_or_404(BookReader, book=book, finish_date=None)
+        book_reader.finish_date = datetime.date.today()
+        book_reader.save()
         return Response({'msg': 'Success'})
-
-
-
-# class BookCopyList(APIView):
-#     def get(self, request, pk):
-#         try:
-#             copy = Copy.objects.filter(book=pk)
-#             serializer = CopySerializer(copy, many=True)
-#             return Response(serializer.data)
-#         except Copy.DoesNotExist:
-#             raise Http404
-#
-#
-# class CopyList(APIView):
-#     def get(self, request):
-#         cypher = request.GET.get('cypher')
-#         if cypher:
-#             try:
-#                 copy = Copy.objects.get(cipher=cypher)
-#             except Copy.DoesNotExist:
-#                 raise Http404
-#             serializer = CopySerializer(copy)
-#         else:
-#             copy = Copy.objects.all()
-#             serializer = CopySerializer(copy, many=True)
-#         return Response(serializer.data)
-#
-#     def post(self, request):
-#         copy = CopyPostSerializer(data=request.data)
-#         if copy.is_valid():
-#             copy.save()
-#             return Response({'msg': "Success"})
-#         else:
-#             return Response({'msg': "Error"})
-#
-#
-# class CopyDetail(APIView):
-#     def get_object(self, pk):
-#         try:
-#             return Copy.objects.get(id=pk)
-#         except Copy.DoesNotExist:
-#             raise Http404
-#
-#     def get(self, request, pk):
-#         copy = self.get_object(pk)
-#         serializer = CopySerializer(copy)
-#         return Response(serializer.data)
-#
-#
-#
-# class RentList(APIView):
-#     def get(self, request):
-#         reader_number = request.GET.get('reader')
-#         if reader_number:
-#             try:
-#                 reader = Reader.objects.get(number=reader_number)
-#                 try:
-#                     rent = Rent.objects.filter(reader=reader, actual_return_date=None)
-#
-#                 except Rent.DoesNotExist:
-#                     raise Http404
-#             except Reader.DoesNotExist:
-#                 raise Http404
-#         else:
-#             rent = Rent.objects.all()
-#         serializer = RentSerializer(rent, many=True)
-#         return Response(serializer.data)
-#
-#     def post(self, request):
-#         rent = RentPostSerializer(data=request.data)
-#         if rent.is_valid():
-#             rent.save()
-#             return Response({'msg': "Success"})
-#         else:
-#             return Response({'msg': "Error"})
-#
-#
-# class RentDetail(APIView):
-#     def get_object(self, pk):
-#         try:
-#             return Rent.objects.get(id=pk)
-#         except Rent.DoesNotExist:
-#             raise Http404
-#
-#     def get(self, request, pk):
-#         rent = self.get_object(pk)
-#         returner = request.GET.get('returner')
-#         if returner:
-#             rent.actual_return_date = datetime.datetime.now().date()
-#             rent.save()
-#         serializer = RentSerializer(rent)
-#         return Response(serializer.data)

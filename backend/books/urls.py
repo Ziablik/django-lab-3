@@ -12,6 +12,7 @@ urlpatterns = [
     path('reading-rooms/', ReadingRoomList.as_view()),
     path('educations/', EducationList.as_view()),
     path('book-reader/', BookReaderAdd.as_view()),
+    path('book-return/', BookReturn.as_view()),
     #
     # path('copy/', CopyList.as_view()),
     # path('copy/<int:pk>/', CopyDetail.as_view()),
